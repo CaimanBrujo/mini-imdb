@@ -1,0 +1,14 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# macOS system file
+.DS_Store
+
+# Logs
+*.log
+
+# Railway local config
+railway.json
