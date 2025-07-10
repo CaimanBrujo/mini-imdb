@@ -14,17 +14,19 @@
       </header>
 
       <h1><%= title %></h1>
-      <a href="/genres/new" class="btn">+ New Genre</a>
+      <a href="/movies/new" class="btn">+ New Movie</a>
 
       <ul class="list">
-        <% genres.forEach(genre => { %>
+        <% movies.forEach(movie => { %>
         <li class="list-item">
           <div>
-            <strong><%= genre.name %></strong><br />
-            <small><%= genre.description || "No description" %></small>
+            <strong><%= movie.title %></strong><br />
+            <small><%= movie.release_year %> • <%= movie.genre_name %></small
+            ><br />
+            <p><%= movie.description || "No description" %></p>
           </div>
           <div>
-            <a href="/genres/<%= genre.id %>/edit" class="btn">Edit</a>
+            <a href="/movies/<%= movie.id %>/edit" class="btn">Edit</a>
           </div>
         </li>
         <% }) %>
