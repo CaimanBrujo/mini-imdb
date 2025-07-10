@@ -21,9 +21,7 @@
         <li class="list-item">
           <div>
             <strong><%= movie.title %></strong><br />
-            <small><%= movie.release_year %> • <%= movie.genre_name %></small
-            ><br />
-            <p><%= movie.description || "No description" %></p>
+            <small><%= movie.release_year %> • <%= movie.genre_name %></small>
           </div>
           <div>
             <a href="/movies/<%= movie.id %>/edit" class="btn">Edit</a>

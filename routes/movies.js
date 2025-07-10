@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT movies.*, genres.name AS genre_name FROM movies JOIN genres ON movies.genre_id = genres.id ORDER BY movies.title ASC`
+      `SELECT movies.id, movies.title, movies.release_year, genres.name AS genre_name FROM movies JOIN genres ON movies.genre_id = genres.id ORDER BY movies.title ASC`
     );
     res.render("movies", { title: "Movies", movies: result.rows });
   } catch (err) {
@@ -34,8 +34,7 @@ router.get("/new", async (req, res) => {
 
 // Handle creation of a new movie (requires admin password)
 router.post("/new", async (req, res) => {
-  const { title, description, release_year, genre_id, adminPassword } =
-    req.body;
+  const { title, release_year, genre_id, adminPassword } = req.body;
 
   if (adminPassword !== process.env.ADMIN_PASSWORD) {
     return res
@@ -45,8 +44,8 @@ router.post("/new", async (req, res) => {
 
   try {
     await pool.query(
-      "INSERT INTO movies (title, description, release_year, genre_id) VALUES ($1, $2, $3, $4)",
-      [title.trim(), description, release_year, genre_id]
+      "INSERT INTO movies (title, release_year, genre_id) VALUES ($1, $2, $3)",
+      [title.trim(), release_year, genre_id]
     );
     res.redirect("/movies");
   } catch (err) {
@@ -84,8 +83,7 @@ router.get("/:id/edit", async (req, res) => {
 // Handle movie update (requires admin password)
 router.post("/:id/edit", async (req, res) => {
   const { id } = req.params;
-  const { title, description, release_year, genre_id, adminPassword } =
-    req.body;
+  const { title, release_year, genre_id, adminPassword } = req.body;
 
   if (adminPassword !== process.env.ADMIN_PASSWORD) {
     return res
@@ -95,8 +93,8 @@ router.post("/:id/edit", async (req, res) => {
 
   try {
     await pool.query(
-      "UPDATE movies SET title = $1, description = $2, release_year = $3, genre_id = $4 WHERE id = $5",
-      [title.trim(), description, release_year, genre_id, id]
+      "UPDATE movies SET title = $1, release_year = $2, genre_id = $3 WHERE id = $4",
+      [title.trim(), release_year, genre_id, id]
     );
     res.redirect("/movies");
   } catch (err) {
