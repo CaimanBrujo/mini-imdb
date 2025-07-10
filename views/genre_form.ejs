@@ -15,7 +15,23 @@
 
       <h1><%= title %></h1>
 
-      <form method="POST" action="<%= action %>">
+      <!-- ADMIN PASSWORD (one for all forms) -->
+      <div class="admin-password">
+        <label for="adminPassword">Admin Password</label>
+        <input
+          type="password"
+          id="adminPassword"
+          name="adminPassword"
+          required
+        />
+      </div>
+
+      <!-- CREATE & EDIT FORM -->
+      <form
+        method="POST"
+        action="<%= action %>"
+        onsubmit="return appendAdminPassword(this)"
+      >
         <label for="name">Name</label>
         <input
           type="text"
@@ -30,15 +46,20 @@
 <%= genre?.description || '' %></textarea
         >
 
+        <input type="hidden" name="adminPassword" />
+
         <button type="submit" class="btn"><%= buttonText %></button>
       </form>
 
+      <!-- DELETE FORM -->
       <% if (genre?.id) { %>
       <form
         method="POST"
         action="/genres/<%= genre.id %>/delete"
+        onsubmit="return appendAdminPassword(this)"
         style="margin-top: 1em"
       >
+        <input type="hidden" name="adminPassword" />
         <button
           type="submit"
           class="btn danger"
@@ -51,5 +72,17 @@
 
       <p><a href="/genres" class="btn">← Back to Genres</a></p>
     </div>
+
+    <script>
+      function appendAdminPassword(form) {
+        const adminPassword = document.getElementById("adminPassword").value;
+        if (!adminPassword) {
+          alert("Please enter the admin password.");
+          return false; // Cancel submit
+        }
+        form.querySelector('input[name="adminPassword"]').value = adminPassword;
+        return true; // Allow submit
+      }
+    </script>
   </body>
 </html>

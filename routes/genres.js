@@ -23,9 +23,16 @@ router.get("/new", (req, res) => {
   });
 });
 
-// Handle creation of a new genre
+// Handle creation of a new genre (requires admin password)
 router.post("/new", async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, adminPassword } = req.body;
+
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return res
+      .status(403)
+      .send("Invalid admin password. You are not authorized to create.");
+  }
+
   try {
     await pool.query("INSERT INTO genres (name, description) VALUES ($1, $2)", [
       name.trim(),
@@ -58,10 +65,17 @@ router.get("/:id/edit", async (req, res) => {
   }
 });
 
-// Handle genre update
+// Handle genre update (requires admin password)
 router.post("/:id/edit", async (req, res) => {
   const { id } = req.params;
-  const { name, description } = req.body;
+  const { name, description, adminPassword } = req.body;
+
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return res
+      .status(403)
+      .send("Invalid admin password. You are not authorized to edit.");
+  }
+
   try {
     await pool.query(
       "UPDATE genres SET name = $1, description = $2 WHERE id = $3",
@@ -74,11 +88,18 @@ router.post("/:id/edit", async (req, res) => {
   }
 });
 
-// Handle genre deletion
+// Handle genre deletion (requires admin password)
 router.post("/:id/delete", async (req, res) => {
   const { id } = req.params;
+  const { adminPassword } = req.body;
+
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return res
+      .status(403)
+      .send("Invalid admin password. You are not authorized to delete.");
+  }
+
   try {
-    // Check if there are movies associated with this genre
     const movies = await pool.query(
       "SELECT * FROM movies WHERE genre_id = $1",
       [id]

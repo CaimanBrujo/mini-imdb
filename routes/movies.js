@@ -32,9 +32,17 @@ router.get("/new", async (req, res) => {
   }
 });
 
-// Handle creation of a new movie
+// Handle creation of a new movie (requires admin password)
 router.post("/new", async (req, res) => {
-  const { title, description, release_year, genre_id } = req.body;
+  const { title, description, release_year, genre_id, adminPassword } =
+    req.body;
+
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return res
+      .status(403)
+      .send("Invalid admin password. You are not authorized to create.");
+  }
+
   try {
     await pool.query(
       "INSERT INTO movies (title, description, release_year, genre_id) VALUES ($1, $2, $3, $4)",
@@ -73,10 +81,18 @@ router.get("/:id/edit", async (req, res) => {
   }
 });
 
-// Handle movie update
+// Handle movie update (requires admin password)
 router.post("/:id/edit", async (req, res) => {
   const { id } = req.params;
-  const { title, description, release_year, genre_id } = req.body;
+  const { title, description, release_year, genre_id, adminPassword } =
+    req.body;
+
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return res
+      .status(403)
+      .send("Invalid admin password. You are not authorized to edit.");
+  }
+
   try {
     await pool.query(
       "UPDATE movies SET title = $1, description = $2, release_year = $3, genre_id = $4 WHERE id = $5",
@@ -89,9 +105,17 @@ router.post("/:id/edit", async (req, res) => {
   }
 });
 
-// Handle movie deletion
+// Handle movie deletion (requires admin password)
 router.post("/:id/delete", async (req, res) => {
   const { id } = req.params;
+  const { adminPassword } = req.body;
+
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return res
+      .status(403)
+      .send("Invalid admin password. You are not authorized to delete.");
+  }
+
   try {
     await pool.query("DELETE FROM movies WHERE id = $1", [id]);
     res.redirect("/movies");
